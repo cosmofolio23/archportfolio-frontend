@@ -70,101 +70,163 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-subtle">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container-centered py-6 flex justify-between items-center">
+      <header className="bg-white border-b border-border-light shadow-elevation-1 sticky top-0 z-40">
+        <div className="container-centered py-6 md:py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-gray-600 mt-1">Welcome back, {user?.name || user?.email}!</p>
+            <h1 className="text-4xl font-bold text-charcoal">Dashboard</h1>
+            <p className="text-stone-light mt-2">Welcome back, <span className="font-semibold text-slate">{user?.name || user?.email}</span></p>
           </div>
-          <Link href="/dashboard" className="text-primary hover:text-secondary">
-            Logout
-          </Link>
+          <button
+            onClick={() => router.push('/signin')}
+            className="btn-tertiary text-sm"
+          >
+            Sign Out
+          </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container-centered py-12">
+      <main className="container-centered py-12 md:py-16">
         {/* Create New Project Section */}
-        {!showNewProject ? (
-          <button
-            onClick={() => setShowNewProject(true)}
-            className="btn-primary mb-8 text-lg"
-          >
-            + New Project
-          </button>
-        ) : (
-          <form onSubmit={handleCreateProject} className="bg-white p-6 rounded-lg shadow-sm mb-8">
-            <h2 className="text-xl font-semibold mb-4">Create New Project</h2>
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={newProjectTitle}
-                onChange={(e) => setNewProjectTitle(e.target.value)}
-                placeholder="Project name (e.g., 'Museum Redesign')"
-                className="input-field flex-1"
-                autoFocus
-              />
-              <button type="submit" className="btn-primary">
-                Create
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowNewProject(false)}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
+        <div className="mb-12">
+          {!showNewProject ? (
+            <button
+              onClick={() => setShowNewProject(true)}
+              className="btn-primary text-lg flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Project
+            </button>
+          ) : (
+            <div className="card p-8 bg-white">
+              <h2 className="text-2xl font-semibold text-slate mb-6">Create New Project</h2>
+              <form onSubmit={handleCreateProject} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate mb-2">Project Name</label>
+                  <input
+                    type="text"
+                    value={newProjectTitle}
+                    onChange={(e) => setNewProjectTitle(e.target.value)}
+                    placeholder="e.g., Museum Redesign, Residential Tower"
+                    className="input-field"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <button type="submit" className="btn-primary">
+                    Create Project
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowNewProject(false)
+                      setNewProjectTitle('')
+                    }}
+                    className="btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
-        )}
+          )}
+        </div>
 
         {/* Projects List */}
         {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Loading projects...</p>
+          <div className="text-center py-16">
+            <div className="inline-block">
+              <div className="w-12 h-12 border-4 border-border-light border-t-primary rounded-full animate-spin mb-4"></div>
+              <p className="text-stone-light">Loading your projects...</p>
+            </div>
           </div>
         ) : projects.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-600 text-lg mb-4">No projects yet. Create one to get started!</p>
+          <div className="card bg-white p-16 text-center">
+            <div className="text-6xl mb-6 opacity-20">📐</div>
+            <h3 className="text-2xl font-semibold text-slate mb-3">No projects yet</h3>
+            <p className="text-stone-light mb-8 max-w-sm mx-auto">
+              Get started by creating your first project. Upload your architectural renders, plans, and diagrams to begin.
+            </p>
+            <button
+              onClick={() => setShowNewProject(true)}
+              className="btn-primary"
+            >
+              Create Your First Project
+            </button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <Link
-                key={project.id}
-                href={`/dashboard/project/${project.id}`}
-              >
-                <div className="card p-6 h-full hover:shadow-lg cursor-pointer">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-900 flex-1">
-                      {project.title}
-                    </h3>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        handleDeleteProject(project.id)
-                      }}
-                      className="text-red-600 hover:text-red-700 text-sm ml-2"
-                    >
-                      ✕
-                    </button>
+          <div>
+            <h2 className="text-2xl font-semibold text-slate mb-8">
+              Your Projects
+              <span className="text-sm font-normal text-stone-light ml-2">({projects.length})</span>
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <Link
+                  key={project.id}
+                  href={`/dashboard/project/${project.id}`}
+                >
+                  <div className="card group bg-white overflow-hidden h-full hover:shadow-elevation-3 cursor-pointer">
+                    {/* Thumbnail Area */}
+                    <div className="h-48 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center overflow-hidden relative">
+                      <div className="text-5xl opacity-30">🏗️</div>
+                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-all duration-200"></div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-2 gap-3">
+                        <h3 className="text-lg font-semibold text-charcoal flex-1 group-hover:text-primary transition-colors">
+                          {project.title}
+                        </h3>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            handleDeleteProject(project.id)
+                          }}
+                          className="flex-shrink-0 text-stone-light hover:text-error transition-colors p-1 hover:bg-red-50 rounded"
+                          title="Delete project"
+                        >
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Asset Count Indicator */}
+                      <div className="mb-4 pb-4 border-b border-border-light">
+                        <div className="text-xs font-medium text-stone-light mb-2">Assets</div>
+                        <div className="flex gap-2">
+                          <div className="flex-1 h-6 rounded bg-blue-100 flex items-center justify-center text-xs font-medium text-primary" title="Renders">R</div>
+                          <div className="flex-1 h-6 rounded bg-amber-100 flex items-center justify-center text-xs font-medium text-amber-700" title="Plans">P</div>
+                          <div className="flex-1 h-6 rounded bg-green-100 flex items-center justify-center text-xs font-medium text-green-700" title="Sections">S</div>
+                          <div className="flex-1 h-6 rounded bg-purple-100 flex items-center justify-center text-xs font-medium text-purple-700" title="Diagrams">D</div>
+                        </div>
+                      </div>
+
+                      {/* Meta Info */}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="badge badge-info">
+                          {project.project_type || 'Project'}
+                        </span>
+                        <span className="text-stone-light">
+                          {new Date(project.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-600 text-sm mb-4 h-12">
-                    {project.description || 'No description'}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                      {project.project_type}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(project.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </main>

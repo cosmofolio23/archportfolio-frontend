@@ -24,10 +24,10 @@ interface Project {
 }
 
 const ASSET_CATEGORIES = [
-  { key: 'render', label: '🏛️ Renders', description: 'Exterior & interior renders' },
-  { key: 'plan', label: '📐 Plans', description: 'Floor plans & site plans' },
-  { key: 'section', label: '✂️ Sections', description: 'Building sections & elevations' },
-  { key: 'diagram', label: '📊 Diagrams', description: 'Concept & analysis diagrams' },
+  { key: 'render', label: 'Renders', description: 'Exterior & interior renders', icon: '🖼️' },
+  { key: 'plan', label: 'Plans', description: 'Floor plans & site plans', icon: '📐' },
+  { key: 'section', label: 'Sections', description: 'Building sections & elevations', icon: '📏' },
+  { key: 'diagram', label: 'Diagrams', description: 'Concept & analysis diagrams', icon: '📊' },
 ]
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -127,50 +127,114 @@ export default function ProjectPage() {
   }
 
   const totalAssets = Object.values(assets).reduce((sum, arr) => sum + arr.length, 0)
+  const activeCategory = ASSET_CATEGORIES.find(c => c.key === activeTab)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-subtle">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">← Dashboard</Link>
-            <span className="text-gray-300">/</span>
-            <h1 className="text-xl font-bold text-gray-900">{project?.title || 'Loading...'}</h1>
+      <header className="bg-white border-b border-border-light shadow-elevation-1 sticky top-0 z-40">
+        <div className="container-centered py-4 md:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="text-stone-light hover:text-slate transition-colors flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back
+            </Link>
+            <div className="divider h-6"></div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-charcoal">{project?.title || 'Loading...'}</h1>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">{totalAssets} assets</span>
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-stone-light font-medium">{totalAssets} assets uploaded</span>
             {totalAssets > 0 && (
               <Link
                 href={`/dashboard/project/${params.id}/generate`}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+                className="btn-primary flex items-center gap-2"
               >
-                ✨ Generate Portfolio
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                </svg>
+                Generate Portfolio
               </Link>
             )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="container-centered py-8 md:py-12">
+        {/* Category Tabs */}
+        <div className="mb-8">
+          <div className="flex gap-2 flex-wrap md:flex-nowrap">
+            {ASSET_CATEGORIES.map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveTab(cat.key)}
+                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
+                  activeTab === cat.key
+                    ? 'bg-primary text-white shadow-elevation-2'
+                    : 'bg-white text-slate border border-border-light hover:shadow-elevation-1'
+                }`}
+              >
+                <span className="text-lg">{cat.icon}</span>
+                {cat.label}
+                {assets[cat.key]?.length > 0 && (
+                  <span className={`ml-auto px-2 py-0.5 rounded-full text-xs font-semibold ${
+                    activeTab === cat.key
+                      ? 'bg-blue-400 text-white'
+                      : 'bg-gray-200 text-slate'
+                  }`}>
+                    {assets[cat.key].length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          {activeCategory && (
+            <p className="text-sm text-stone-light mt-3">{activeCategory.description}</p>
+          )}
+        </div>
+
         {/* Upload Area */}
         <div
-          className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-8 text-center mb-6 hover:border-blue-400 transition cursor-pointer"
+          className="card bg-white border-2 border-dashed border-border-light rounded-2xl p-12 text-center mb-8 hover:border-primary hover:shadow-elevation-2 transition-all duration-200 cursor-pointer"
           onClick={() => fileInputRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); handleUpload(e.dataTransfer.files) }}
+          onDragOver={(e) => {
+            e.preventDefault()
+            e.currentTarget.classList.add('border-primary', 'bg-blue-50')
+          }}
+          onDragLeave={(e) => {
+            e.currentTarget.classList.remove('border-primary', 'bg-blue-50')
+          }}
+          onDrop={(e) => {
+            e.preventDefault()
+            e.currentTarget.classList.remove('border-primary', 'bg-blue-50')
+            handleUpload(e.dataTransfer.files)
+          }}
         >
-          <div className="text-4xl mb-3">
-            {ASSET_CATEGORIES.find(c => c.key === activeTab)?.label}
-          </div>
-          <p className="text-lg font-medium text-gray-700 mb-1">
+          <div className="text-6xl mb-4 opacity-50">{activeCategory?.icon}</div>
+          <h3 className="text-xl font-semibold text-charcoal mb-2">
             Drop files here or click to upload
-          </p>
-          <p className="text-sm text-gray-500">
-            {ASSET_CATEGORIES.find(c => c.key === activeTab)?.description}
+          </h3>
+          <p className="text-stone-light mb-6">
+            Supports PNG, JPG, TIFF, PDF and other image formats
           </p>
           {uploadProgress && (
-            <p className="mt-3 text-sm font-medium text-blue-600">{uploadProgress}</p>
+            <div className="mb-6">
+              <p className={`text-sm font-medium ${
+                uploadProgress.includes('successfully')
+                  ? 'text-success'
+                  : uploadProgress.includes('Error')
+                  ? 'text-error'
+                  : 'text-info'
+              }`}>
+                {uploadProgress}
+              </p>
+            </div>
           )}
           <input
             ref={fileInputRef}
@@ -182,60 +246,49 @@ export default function ProjectPage() {
           />
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex gap-2 mb-6">
-          {ASSET_CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              onClick={() => setActiveTab(cat.key)}
-              className={`px-4 py-2 rounded-lg font-medium transition text-sm ${
-                activeTab === cat.key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              {cat.label}
-              {assets[cat.key]?.length > 0 && (
-                <span className={`ml-2 px-1.5 py-0.5 rounded-full text-xs ${
-                  activeTab === cat.key ? 'bg-blue-500' : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {assets[cat.key].length}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
         {/* Asset Grid */}
         {isLoading ? (
-          <div className="text-center py-12 text-gray-500">Loading assets...</div>
+          <div className="text-center py-16">
+            <div className="inline-block">
+              <div className="w-12 h-12 border-4 border-border-light border-t-primary rounded-full animate-spin mb-4"></div>
+              <p className="text-stone-light">Loading assets...</p>
+            </div>
+          </div>
         ) : assets[activeTab]?.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center border border-gray-200">
-            <div className="text-5xl mb-3">📁</div>
-            <p className="text-gray-500">No {activeTab}s uploaded yet</p>
-            <p className="text-sm text-gray-400 mt-1">Click the upload area above to add files</p>
+          <div className="card bg-white rounded-xl p-12 text-center">
+            <div className="text-6xl mb-4 opacity-20">📁</div>
+            <h3 className="text-xl font-semibold text-slate mb-2">No {activeTab}s uploaded yet</h3>
+            <p className="text-stone-light">Use the upload area above to add your files</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {assets[activeTab].map(asset => (
-              <div key={asset.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden group">
-                <div className="aspect-square bg-gray-100 flex items-center justify-center relative">
+              <div key={asset.id} className="card bg-white overflow-hidden group hover:shadow-elevation-2">
+                <div className="aspect-square bg-slate-100 flex items-center justify-center relative overflow-hidden">
                   {asset.file_url && asset.file_url.startsWith('http') ? (
-                    <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
+                    <img
+                      src={asset.file_url}
+                      alt={asset.file_name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display='none' }}
+                    />
                   ) : (
-                    <div className="text-4xl">📄</div>
+                    <div className="text-4xl opacity-40">📄</div>
                   )}
                   <button
                     onClick={() => handleDeleteAsset(asset.id)}
-                    className="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs hidden group-hover:flex items-center justify-center"
+                    className="absolute top-2 right-2 bg-error text-white w-8 h-8 rounded-lg text-sm hidden group-hover:flex items-center justify-center hover:bg-red-700 transition-colors"
+                    title="Delete asset"
                   >
-                    ✕
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
                   </button>
                 </div>
-                <div className="p-2">
-                  <p className="text-xs text-gray-600 truncate">{asset.file_name}</p>
-                  <p className="text-xs text-gray-400">
-                    {asset.file_size ? `${(asset.file_size / 1024).toFixed(0)} KB` : ''}
+                <div className="p-3">
+                  <p className="text-xs text-charcoal font-medium truncate" title={asset.file_name}>{asset.file_name}</p>
+                  <p className="text-xs text-stone-light">
+                    {asset.file_size ? `${(asset.file_size / 1024 / 1024).toFixed(2)} MB` : ''}
                   </p>
                 </div>
               </div>
@@ -245,16 +298,16 @@ export default function ProjectPage() {
 
         {/* Generate CTA */}
         {totalAssets > 0 && (
-          <div className="mt-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white text-center">
-            <h2 className="text-xl font-bold mb-2">Ready to generate your portfolio?</h2>
-            <p className="text-blue-100 mb-4">
-              You have {totalAssets} assets across {Object.values(assets).filter(a => a.length > 0).length} categories
+          <div className="mt-12 card-elevated bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 text-white text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">Ready to generate your portfolio?</h2>
+            <p className="text-blue-100 mb-8 text-lg">
+              You have <span className="font-semibold">{totalAssets} assets</span> across <span className="font-semibold">{Object.values(assets).filter(a => a.length > 0).length} categories</span>. Let AI create stunning variations.
             </p>
             <Link
               href={`/dashboard/project/${params.id}/generate`}
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition inline-block"
+              className="inline-block bg-white text-primary px-8 py-4 rounded-lg font-bold hover:bg-gray-50 transition-colors"
             >
-              ✨ Generate Portfolio Variants
+              Generate Portfolio Variants
             </Link>
           </div>
         )}

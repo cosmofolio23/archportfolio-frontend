@@ -8,52 +8,168 @@
   }
 
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-white text-charcoal antialiased;
+    font-size: 16px;
+    line-height: 1.6;
   }
 
   h1 {
-    @apply text-4xl font-bold;
+    @apply text-5xl md:text-6xl font-bold leading-tight tracking-tight text-charcoal;
   }
 
   h2 {
-    @apply text-3xl font-bold;
+    @apply text-3xl md:text-4xl font-bold leading-snug tracking-tight text-slate;
   }
 
   h3 {
-    @apply text-2xl font-semibold;
+    @apply text-2xl md:text-3xl font-semibold leading-snug text-slate;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl font-semibold text-slate;
+  }
+
+  p {
+    @apply text-slate-light leading-relaxed;
   }
 
   button {
-    @apply transition-colors duration-200;
+    @apply transition-all duration-200 ease-out;
   }
 
   a {
-    @apply text-primary hover:text-secondary;
+    @apply text-primary hover:text-primary-light transition-colors duration-200;
+  }
+
+  input, textarea, select {
+    @apply transition-colors duration-200;
   }
 }
 
 @layer components {
+  /* Primary Button - Main CTA */
   .btn-primary {
-    @apply px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary font-medium transition-colors;
+    @apply px-6 py-3 bg-primary text-white rounded-lg font-medium text-base;
+    @apply hover:bg-primary-light hover:shadow-elevation-2 active:shadow-elevation-1;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none;
+    @apply transition-all duration-200;
   }
 
+  .btn-primary.btn-small {
+    @apply px-4 py-2 text-sm;
+  }
+
+  /* Secondary Button - Alternative action */
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 font-medium transition-colors;
+    @apply px-6 py-3 bg-cream border border-border-light text-slate rounded-lg font-medium text-base;
+    @apply hover:bg-gray-100 hover:shadow-elevation-1 active:bg-gray-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply transition-all duration-200;
   }
 
-  .btn-small {
-    @apply px-3 py-1 text-sm;
+  .btn-secondary.btn-small {
+    @apply px-4 py-2 text-sm;
   }
 
+  /* Tertiary Button - Ghost/minimal */
+  .btn-tertiary {
+    @apply px-4 py-2 text-primary font-medium rounded-lg;
+    @apply hover:bg-blue-50 active:bg-blue-100;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply transition-colors duration-200;
+  }
+
+  /* Cards - Elevated containers */
   .card {
-    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow;
+    @apply bg-white border border-border-light rounded-xl shadow-elevation-1;
+    @apply hover:shadow-elevation-2 transition-all duration-200;
   }
 
+  .card-elevated {
+    @apply bg-white border border-border-light rounded-xl shadow-elevation-3;
+    @apply hover:shadow-elevation-4 transition-all duration-200;
+  }
+
+  .card-flat {
+    @apply bg-cream border border-border-light rounded-lg;
+  }
+
+  /* Input Fields */
   .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply w-full px-4 py-3 bg-white border border-border-light rounded-lg text-charcoal placeholder-stone;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent focus:shadow-elevation-1;
+    @apply disabled:bg-gray-50 disabled:text-stone disabled:cursor-not-allowed;
+    @apply transition-all duration-200;
   }
 
+  .input-field::placeholder {
+    @apply text-stone-light;
+  }
+
+  /* Container */
   .container-centered {
-    @apply max-w-6xl mx-auto px-4;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Grid utilities for architectural layouts */
+  .grid-cols-auto {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  /* Divider */
+  .divider {
+    @apply border-t border-border-light;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply bg-blue-100 text-primary;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-success;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-warning;
+  }
+
+  .badge-info {
+    @apply bg-cyan-100 text-info;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply bg-gray-200 animate-pulse rounded;
+  }
+
+  /* Link hover effect */
+  .link-hover {
+    @apply relative cursor-pointer;
+  }
+
+  .link-hover::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+  }
+
+  .link-hover:hover::after {
+    @apply w-full;
   }
 }
