@@ -93,11 +93,8 @@ export default function GeneratePage() {
     }, 1500)
 
     try {
-      const styles = STYLE_PACKS.map(s => s.id)
       for (let v = 1; v <= variantCount; v++) {
         setGeneratingMsg(`✨ Creating variant ${v} of ${variantCount}...`)
-        // Cycle through different style packs for each variant
-        const styleForVariant = styles[(v - 1) % styles.length]
         await fetch(`${API_URL}/api/portfolios/${params.id}/generate`, {
           method: 'POST',
           headers: {
@@ -106,7 +103,7 @@ export default function GeneratePage() {
           },
           body: JSON.stringify({
             layout_id: selectedLayout,
-            style_pack: styleForVariant,
+            style_pack: selectedStyle,
             variant_number: v
           })
         })
