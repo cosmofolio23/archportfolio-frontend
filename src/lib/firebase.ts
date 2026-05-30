@@ -5,6 +5,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
   User
 } from 'firebase/auth'
 
@@ -49,6 +51,25 @@ export async function firebaseSignIn(email: string, password: string) {
 
 export async function firebaseSignOut() {
   await signOut(auth)
+}
+
+export async function firebaseGoogleSignIn() {
+  const provider = new GoogleAuthProvider()
+  const userCredential = await signInWithPopup(auth, provider)
+  const user = userCredential.user
+  const token = await user.getIdToken()
+
+  // Save user in Supabase DB via backend
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+  try {
+    await fetch(`${apiUrl}/api/auth/verify-token?token=${token}`, {
+      method: 'POST',
+    })
+  } catch (e) {
+    console.log('Backend sync error (non-critical):', e)
+  }
+
+  return { user, token }
 }
 
 export function onAuthStateChange(callback: (user: User | null) => void) {

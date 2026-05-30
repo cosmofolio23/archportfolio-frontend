@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { firebaseSignUp, firebaseSignIn, firebaseSignOut } from '@/lib/firebase'
+import { firebaseSignUp, firebaseSignIn, firebaseSignOut, firebaseGoogleSignIn } from '@/lib/firebase'
 
 interface User {
   id: string
@@ -16,6 +16,7 @@ interface AuthStore {
 
   signup: (email: string, password: string, name?: string) => Promise<void>
   login: (email: string, password: string) => Promise<void>
+  loginWithGoogle: () => Promise<void>
   logout: () => Promise<void>
   setToken: (token: string) => void
 }
@@ -83,6 +84,32 @@ export const useAuthStore = create<AuthStore>((set) => ({
         throw new Error('Invalid email or password')
       }
       throw new Error(error.message || 'Login failed. Please try again.')
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  loginWithGoogle: async () => {
+    set({ isLoading: true })
+    try {
+      const { user, token } = await firebaseGoogleSignIn()
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', token)
+        localStorage.setItem('user_id', user.uid)
+      }
+      set({
+        user: {
+          id: user.uid,
+          email: user.email || '',
+          name: user.displayName || '',
+        },
+        token,
+        isAuthenticated: true,
+      })
+    } catch (error: any) {
+      console.error('Google login failed:', error)
+      if (error.code === 'auth/popup-closed-by-user') throw new Error('Sign in cancelled')
+      throw new Error(error.message || 'Google sign in failed')
     } finally {
       set({ isLoading: false })
     }
