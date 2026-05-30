@@ -39,7 +39,7 @@ export default function PortfolioPreviewPage() {
         setIsLoading(false)
         return
       }
-      const res = await fetch(`${API_URL}/api/portfolios/${params.portfolioId}`, {
+      const res = await fetch(`${API_URL}/api/portfolios/view/${params.portfolioId}`, {
         headers: { 'Authorization': `Bearer ${savedToken}` }
       })
       if (res.ok) {
