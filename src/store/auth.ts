@@ -1,11 +1,11 @@
 import { create } from 'zustand'
-import { apiClient } from '@/lib/api'
+import { firebaseSignUp, firebaseSignIn, firebaseSignOut, auth } from '@/lib/firebase'
 
 interface User {
   id: string
   email: string
   name?: string
-  created_at: string
+  created_at?: string
 }
 
 interface AuthStore {
@@ -14,11 +14,9 @@ interface AuthStore {
   isLoading: boolean
   isAuthenticated: boolean
 
-  // Actions
   signup: (email: string, password: string, name?: string) => Promise<void>
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
-  getCurrentUser: () => Promise<void>
   setToken: (token: string) => void
 }
 
@@ -26,21 +24,35 @@ export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   token: typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null,
   isLoading: false,
-  isAuthenticated: false,
+  isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('auth_token') : false,
 
   signup: async (email: string, password: string, name?: string) => {
     set({ isLoading: true })
     try {
-      const response = await apiClient.signup(email, password, name)
+      const { user, token } = await firebaseSignUp(email, password, name || '')
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', token)
+        localStorage.setItem('user_id', user.uid)
+      }
+
       set({
-        user: response.user,
-        token: response.access_token,
+        user: {
+          id: user.uid,
+          email: user.email || email,
+          name: name,
+        },
+        token,
         isAuthenticated: true,
       })
-      apiClient.setToken(response.access_token)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup failed:', error)
-      throw error
+      // Convert Firebase errors to readable messages
+      const code = error.code || ''
+      if (code === 'auth/email-already-in-use') throw new Error('Email already in use')
+      if (code === 'auth/weak-password') throw new Error('Password is too weak (min 6 characters)')
+      if (code === 'auth/invalid-email') throw new Error('Invalid email address')
+      throw new Error(error.message || 'Sign up failed. Please try again.')
     } finally {
       set({ isLoading: false })
     }
@@ -49,16 +61,28 @@ export const useAuthStore = create<AuthStore>((set) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true })
     try {
-      const response = await apiClient.login(email, password)
+      const { user, token } = await firebaseSignIn(email, password)
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', token)
+        localStorage.setItem('user_id', user.uid)
+      }
+
       set({
-        user: response.user,
-        token: response.access_token,
+        user: {
+          id: user.uid,
+          email: user.email || email,
+        },
+        token,
         isAuthenticated: true,
       })
-      apiClient.setToken(response.access_token)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error)
-      throw error
+      const code = error.code || ''
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        throw new Error('Invalid email or password')
+      }
+      throw new Error(error.message || 'Login failed. Please try again.')
     } finally {
       set({ isLoading: false })
     }
@@ -67,12 +91,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   logout: async () => {
     set({ isLoading: true })
     try {
-      await apiClient.logout()
-      set({
-        user: null,
-        token: null,
-        isAuthenticated: false,
-      })
+      await firebaseSignOut()
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_id')
+      }
+      set({ user: null, token: null, isAuthenticated: false })
     } catch (error) {
       console.error('Logout failed:', error)
     } finally {
@@ -80,21 +104,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
 
-  getCurrentUser: async () => {
-    set({ isLoading: true })
-    try {
-      const user = await apiClient.getCurrentUser()
-      set({ user, isAuthenticated: true })
-    } catch (error) {
-      console.error('Get user failed:', error)
-      set({ user: null, isAuthenticated: false })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
-
   setToken: (token: string) => {
     set({ token })
-    apiClient.setToken(token)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', token)
+    }
   },
 }))

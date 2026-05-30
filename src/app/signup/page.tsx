@@ -37,7 +37,7 @@ export default function SignUp() {
       await signup(email, password, name)
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Sign up failed. Please try again.')
+      setError(err.message || 'Sign up failed. Please try again.')
     } finally {
       setIsLoading(false)
     }

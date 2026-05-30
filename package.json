@@ -27,7 +27,8 @@
     "html2canvas": "^1.4.0",
     "react-pdf": "^7.5.0",
     "clsx": "^2.0.0",
-    "class-variance-authority": "^0.7.0"
+    "class-variance-authority": "^0.7.0",
+    "firebase": "^10.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
