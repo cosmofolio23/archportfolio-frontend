@@ -29,16 +29,28 @@ export default function PortfolioPreviewPage() {
     if (!isAuthenticated) { router.push('/signin'); return }
     loadPortfolio()
     loadAssets()
-  }, [isAuthenticated])
+  }, [isAuthenticated, token])
 
   const loadPortfolio = async () => {
     try {
       const savedToken = token || localStorage.getItem('auth_token')
+      if (!savedToken) {
+        console.error('No auth token available')
+        setIsLoading(false)
+        return
+      }
       const res = await fetch(`${API_URL}/api/portfolios/${params.portfolioId}`, {
         headers: { 'Authorization': `Bearer ${savedToken}` }
       })
-      if (res.ok) setPortfolio(await res.json())
-    } catch (e) { console.error(e) }
+      if (res.ok) {
+        const data = await res.json()
+        setPortfolio(data)
+      } else {
+        console.error(`Failed to load portfolio: ${res.status}`, await res.text())
+      }
+    } catch (e) {
+      console.error('Error loading portfolio:', e)
+    }
     finally { setIsLoading(false) }
   }
 
