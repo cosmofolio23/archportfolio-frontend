@@ -41,7 +41,7 @@ export default function ProjectPage() {
     render: [], plan: [], section: [], diagram: []
   })
   const [activeTab, setActiveTab] = useState('render')
-  const [isUploading, setIsUploading] = useState(false)
+  const [_isUploading, setIsUploading] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [uploadProgress, setUploadProgress] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
