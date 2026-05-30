@@ -66,6 +66,17 @@ export default function GeneratePage() {
     } catch (e) { console.error(e) }
   }
 
+  const deletePortfolio = async (portfolioId: string) => {
+    if (!confirm('Delete this portfolio variant?')) return
+    try {
+      await fetch(`${API_URL}/api/portfolios/${portfolioId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      await loadPortfolios()
+    } catch (e) { console.error(e) }
+  }
+
   const handleGenerate = async () => {
     setIsGenerating(true)
     const msgs = [
@@ -257,6 +268,12 @@ export default function GeneratePage() {
                     >
                       📥 PDF
                     </a>
+                    <button
+                      onClick={() => deletePortfolio(portfolio.id)}
+                      className="flex-1 bg-red-100 text-red-700 text-center py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition"
+                    >
+                      🗑️ Delete
+                    </button>
                   </div>
                 </div>
               ))}
