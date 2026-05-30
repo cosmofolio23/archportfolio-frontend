@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { firebaseSignUp, firebaseSignIn, firebaseSignOut, firebaseGoogleSignIn } from '@/lib/firebase'
+import { apiClient } from '@/lib/api'
 
 interface User {
   id: string
@@ -37,6 +38,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
         localStorage.setItem('user_id', user.uid)
       }
 
+      apiClient.setToken(token)
+
       set({
         user: {
           id: user.uid,
@@ -69,6 +72,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
         localStorage.setItem('user_id', user.uid)
       }
 
+      apiClient.setToken(token)
+
       set({
         user: {
           id: user.uid,
@@ -97,6 +102,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         localStorage.setItem('auth_token', token)
         localStorage.setItem('user_id', user.uid)
       }
+      apiClient.setToken(token)
       set({
         user: {
           id: user.uid,
@@ -123,6 +129,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         localStorage.removeItem('auth_token')
         localStorage.removeItem('user_id')
       }
+      apiClient.clearToken()
       set({ user: null, token: null, isAuthenticated: false })
     } catch (error) {
       console.error('Logout failed:', error)
