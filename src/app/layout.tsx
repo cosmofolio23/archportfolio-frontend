@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'ArchPortfolio Generator',
-  description: 'AI-powered architecture portfolio generator',
+  title: 'CosmoFolio - AI Portfolio Generator',
+  description: 'Free AI-powered architecture portfolio generator',
 }
 
 export default function RootLayout({

@@ -19,7 +19,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Navigation */}
       <nav className="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
-        <div className="text-2xl font-bold text-primary">ArchPortfolio</div>
+        <div className="text-2xl font-bold text-primary">CosmoFolio</div>
         <div className="flex gap-4">
           <Link href="/signin" className="btn-secondary btn-small">
             Sign In
@@ -104,7 +104,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8 mt-20">
         <div className="container-centered text-center">
-          <p>&copy; 2024 ArchPortfolio Generator. All rights reserved.</p>
+          <p>&copy; 2024 CosmoFolio Generator. All rights reserved.</p>
         </div>
       </footer>
     </div>
