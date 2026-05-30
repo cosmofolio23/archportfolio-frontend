@@ -64,8 +64,9 @@ export default function ProjectPage() {
   const loadAssets = async () => {
     try {
       setIsLoading(true)
+      const savedToken = token || localStorage.getItem('auth_token')
       const res = await fetch(`${API_URL}/api/assets/${params.id}/list`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${savedToken}` }
       })
       if (res.ok) {
         const data = await res.json()
@@ -75,8 +76,10 @@ export default function ProjectPage() {
           section: data.section || [],
           diagram: data.diagram || [],
         })
+      } else {
+        console.error('Load assets failed:', await res.text())
       }
-    } catch (e) { console.error(e) }
+    } catch (e) { console.error('Load assets error:', e) }
     finally { setIsLoading(false) }
   }
 
@@ -89,11 +92,12 @@ export default function ProjectPage() {
     Array.from(files).forEach(f => formData.append('files', f))
 
     try {
+      const savedToken = token || localStorage.getItem('auth_token')
       const res = await fetch(
         `${API_URL}/api/assets/${params.id}/upload?asset_type=${activeTab}`,
         {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
+          headers: { 'Authorization': `Bearer ${savedToken}` },
           body: formData,
         }
       )
@@ -216,8 +220,8 @@ export default function ProjectPage() {
             {assets[activeTab].map(asset => (
               <div key={asset.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden group">
                 <div className="aspect-square bg-gray-100 flex items-center justify-center relative">
-                  {asset.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                    <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" />
+                  {asset.file_url && asset.file_url.startsWith('http') ? (
+                    <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
                   ) : (
                     <div className="text-4xl">📄</div>
                   )}
