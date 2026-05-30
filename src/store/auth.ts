@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { firebaseSignUp, firebaseSignIn, firebaseSignOut, auth } from '@/lib/firebase'
+import { firebaseSignUp, firebaseSignIn, firebaseSignOut } from '@/lib/firebase'
 
 interface User {
   id: string
