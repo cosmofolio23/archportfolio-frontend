@@ -6,7 +6,6 @@ import Link from 'next/link'
 import Logo from '@/components/Logo'
 
 export default function PortfolioWebsiteGenerator() {
-  const params = useParams()
   const router = useRouter()
 
   const [preview, setPreview] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
