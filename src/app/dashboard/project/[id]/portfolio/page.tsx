@@ -40,7 +40,7 @@ export default function PortfolioPage() {
             <ul className="mt-4 space-y-2 text-sm text-gray-600">
               <li>✓ GET /api/design-systems</li>
               <li>✓ GET /api/layouts</li>
-              <li>✓ GET /api/layouts/category/{{category}}</li>
+              <li>✓ GET /api/layouts/category/{category}</li>
             </ul>
           </div>
 
