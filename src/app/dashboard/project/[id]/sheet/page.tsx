@@ -281,7 +281,6 @@ export default function SheetPage() {
     finally { setGenerating(false) }
   }
 
-  const totalAssets = Object.values(assets).reduce((s: number, a: any) => s + (a?.length || 0), 0)
 
   return (
     <div className="min-h-screen bg-gray-50">
