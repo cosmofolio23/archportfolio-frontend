@@ -10,7 +10,6 @@ import {
   Trash2,
   Grid,
   List as ListIcon,
-  Tag,
   Clock,
   Download,
   MoreVertical,
