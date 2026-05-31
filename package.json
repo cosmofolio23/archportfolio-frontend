@@ -1,6 +1,6 @@
 {
   "name": "archportfolio-generator-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1-visual-preview",
   "description": "AI-powered Architecture Portfolio Generator",
   "private": true,
   "scripts": {
