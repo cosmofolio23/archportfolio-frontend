@@ -56,7 +56,6 @@ const config: Config = {
         'primary-lighter': '#42A5F5',
         secondary: '#01579B',
         accent: '#B8860B',
-        'accent-light': '#DAA520',
         charcoal: '#1A1A1A',
         slate: '#2D3E50',
         'slate-light': '#455A64',
