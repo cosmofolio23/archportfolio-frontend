@@ -8,7 +8,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   Upload,
   Trash2,
-  Filter,
   Grid,
   List as ListIcon,
   Tag,
